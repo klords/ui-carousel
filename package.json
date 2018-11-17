@@ -11,16 +11,7 @@
     "carousel",
     "typescript"
   ],
-  "scripts": {
-    "start": "ng serve --aot --host 0.0.0.0",
-    "build": "ng-packagr -p ng-package.json",
-    "test": "npm run lint && ng test --watch false",
-    "test-watch": "ng test",
-    "e2e": "ng e2e",
-    "e2e-watch": "watch \"ng e2e -s false\" src e2e --wait=1",
-    "lint": "ng lint"
-  },
-  "main": "./src/index.ts",
+  "main": "bundles/ng-carousel-iuno.umd.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/goergch/ui-carousel"
@@ -65,5 +56,12 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "module": "esm5/ng-carousel-iuno.js",
+  "es2015": "esm2015/ng-carousel-iuno.js",
+  "typings": "ng-carousel-iuno.d.ts",
+  "metadata": "ng-carousel-iuno.metadata.json",
+  "dependencies": {
+    "tslib": "^1.7.1"
   }
 }
