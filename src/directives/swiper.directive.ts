@@ -1,4 +1,4 @@
-import { Directive, HostListener, ElementRef, Renderer2, Output, EventEmitter, Input } from '@angular/core';
+import { Directive, HostListener, ElementRef, Renderer2, Output, EventEmitter, OnInit } from '@angular/core';
 
 const ZERO = 0.000000000001;
 
@@ -6,13 +6,13 @@ const ZERO = 0.000000000001;
     selector: '[swiper]',
     exportAs: 'swiper'
 })
-export class SwiperDirective {
-    isDown: boolean = false;
+export class SwiperDirective implements OnInit {
+    static canISwipe = true;
+    isDown = false;
     initialPos: number = ZERO;
     lastPos: number = ZERO;
     swipeDistance: number = ZERO;
     firstSwipeDate = Date.now();
-    static canISwipe: boolean = true;
 
     @Output() onSwipeRight: EventEmitter<any> = new EventEmitter<any>();
     @Output() onSwipeLeft: EventEmitter<any> = new EventEmitter<any>();
@@ -47,7 +47,7 @@ export class SwiperDirective {
 
 
 
-    @HostListener("mousedown", ["$event"])
+    @HostListener('mousedown', ['$event'])
     onMouseDown(event: any) {
         if (!SwiperDirective.canISwipe) {
             return;
@@ -59,10 +59,12 @@ export class SwiperDirective {
         this.onSwipeStart.emit();
     }
 
-    @HostListener("document:mouseup", ["$event"])
-    onMouseUp(event: any) {
-        if (!this.isDown)
+    @HostListener('document:mouseup', ['$event'])
+    onMouseUp(__: any) {
+        if (!this.isDown) {
             return;
+        }
+
         this.initialPos = this.lastPos = ZERO;
         this.isDown = false;
 
@@ -76,17 +78,16 @@ export class SwiperDirective {
         this.swipeDistance = ZERO;
     }
 
-    @HostListener("mousemove", ["$event"])
+    @HostListener('mousemove', ['$event'])
     onMouseMove(event: any) {
         if (this.isDown) {
-            let swipeFrameDistance = event.clientX - this.initialPos - this.lastPos;
+            const swipeFrameDistance = event.clientX - this.initialPos - this.lastPos;
             this.swipeDistance += swipeFrameDistance;
             this.lastPos = event.clientX - this.initialPos;
 
             if (swipeFrameDistance > 0) {
                 this.onSwipeLeft.emit(swipeFrameDistance);
-            }
-            else {
+            } else {
                 this.onSwipeRight.emit(swipeFrameDistance);
             }
         }
@@ -97,7 +98,8 @@ export class SwiperDirective {
         if (!SwiperDirective.canISwipe) {
             return;
         }
-        let touch = event.touches[0] || event.changedTouches[0];
+
+        const touch = event.touches[0] || event.changedTouches[0];
         let swipeFrameDistance = touch.clientX - this.initialPos - this.lastPos;
         swipeFrameDistance = swipeFrameDistance < 30 ? swipeFrameDistance : 30;
         this.swipeDistance += swipeFrameDistance;
@@ -105,26 +107,26 @@ export class SwiperDirective {
 
         if (swipeFrameDistance > 0) {
             this.onSwipeLeft.emit(swipeFrameDistance);
-        }
-        else {
+        } else {
             this.onSwipeRight.emit(swipeFrameDistance);
         }
     }
 
-    @HostListener("touchstart", ["$event"])
+    @HostListener('touchstart', ['$event'])
     onTouchStart(event: any) {
         if (!SwiperDirective.canISwipe) {
             return;
         }
-        let touch = event.touches[0] || event.changedTouches[0];
+
+        const touch = event.touches[0] || event.changedTouches[0];
         this.firstSwipeDate = Date.now()
         this.initialPos = touch.clientX;
         this.swipeDistance = ZERO;
         this.onSwipeStart.emit();
     }
 
-    @HostListener("touchend", ["$event"])
-    onTouchEnd(event: any) {
+    @HostListener('touchend', ['$event'])
+    onTouchEnd(__: any) {
         this.initialPos = this.lastPos = ZERO;
         if (this.swipeDistance > 100) {
             this.swipeLeft.emit();
@@ -135,5 +137,4 @@ export class SwiperDirective {
         }
         this.swipeDistance = ZERO;
     }
-
 }

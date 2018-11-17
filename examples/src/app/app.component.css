@@ -5,18 +5,10 @@
     color: #fff;
 }
 
-/* :host{
-    padding: 50px;
-} */
-
-.wr{
+.wr {
     margin: 0 auto;
     height: auto;
     width: 50%;
-}
-
-infinite-carousel{
-    margin: 0 auto;
 }
 
 .header{
@@ -53,4 +45,8 @@ infinite-carousel{
     margin: 6px;
     height: 33px;
     float: left;
+}
+
+.demo-components > * {
+    margin: 33px 0;
 }

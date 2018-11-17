@@ -1,4 +1,12 @@
-import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, HostBinding } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    Input,
+    Output,
+    EventEmitter,
+    HostBinding
+} from '@angular/core';
 
 @Component({
     selector: 'dots',
@@ -11,17 +19,17 @@ import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, HostBind
             display: inline-block;
             z-index: 1000;
         }
-        
+
         :host(.left){
             bottom: 10px;
             left: 10px;
         }
-        
+
         :host(.right){
             bottom: 10px;
             right: 10px;
         }
-        
+
         :host(.middle){
             bottom: 20px;
             left: 50%;
@@ -31,7 +39,7 @@ import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, HostBind
             -o-transform: translateX(-50%);
             -ms-transform: translateX(-50%);
         }
-        
+
         .dot{
             height: 10px;
             width: 10px;
@@ -41,28 +49,29 @@ import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, HostBind
             margin: 0 4px;
             display: inline-block;
         }
-        
+
         .dot:hover{
             opacity: .8;
             cursor: pointer;
         }
-        
+
         .dot.active{
             opacity: .8;
         }
-    `]
+    `],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class DotsComponent implements OnInit {
     numbers: Array<number>;
 
-    @Input("active-dot") activeDot: number = 0;
-    @Input("dots-count") dotsCount: number;
+    @Input('active-dot') activeDot = 0;
+    @Input('dots-count') dotsCount: number;
 
-    @HostBinding("class")
-    @Input() position: string = "left";
+    @HostBinding('class')
+    @Input() position = 'left';
 
-    @Output("on-click") onClick: EventEmitter<number> = new EventEmitter<number>();
+    @Output('on-click') onClick: EventEmitter<number> = new EventEmitter<number>();
 
     constructor() {
     }

@@ -1,17 +1,16 @@
 import {
+    ChangeDetectionStrategy,
     Component,
     OnInit,
     QueryList,
     ContentChildren,
     Input,
     Output,
-    HostBinding,
     HostListener,
     EventEmitter,
     ElementRef
 } from '@angular/core';
 
-import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import 'rxjs/add/operator/throttleTime';
@@ -36,27 +35,28 @@ import {UICarouselItemComponent} from '../ui-carousel-item/ui-carousel-item.comp
             position: relative;
         }
     `],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UICarouselComponent implements OnInit {
     private nextSubject: Subject<any> = new Subject<any>();
     private prevSubject: Subject<any> = new Subject<any>();
     private subscriptions = new Subscription();
     @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
-    @Input() height: string = '300px';
-    @Input() width: string = '100%';
+    @Input() height = '300px';
+    @Input() width = '100%';
     @Input() speed: number;
-    @Input() autoPlay: boolean = true;
+    @Input() autoPlay = true;
     @Input() autoPlaySpeed: number;
 
-    @Input() infinite: boolean = true;
-    @Input() fade: boolean = false;
-    @Input('dots') isDotsVisible: boolean = true;
-    @Input('arrows') isArrowsVisible: boolean = true;
+    @Input() infinite = true;
+    @Input() fade = false;
+    @Input('dots') isDotsVisible = true;
+    @Input('arrows') isArrowsVisible = true;
 
     @ContentChildren(UICarouselItemComponent) items: QueryList<UICarouselItemComponent>;
 
     private _width: number;
-    currentItemIndex: number = 0;
+    currentItemIndex = 0;
     interval: any;
 
     private firstItemIndex: number; // the visual index of item and not necessary the index in the DOM
@@ -88,7 +88,7 @@ export class UICarouselComponent implements OnInit {
             }
         }));
         this.subscriptions.add(this.onChange.subscribe((index: number) => {
-            let item = this.getItemByIndex(index);
+            const item = this.getItemByIndex(index);
             item.lazyLoad();
         }));
     }
@@ -103,7 +103,7 @@ export class UICarouselComponent implements OnInit {
         this.firstItemIndex = 0;
         this.lastItemIndex = this.items.length - 1;
         if (!this.fade) {
-            this.items.forEach((item, itemIndex) => {
+            this.items.forEach((item: UICarouselItemComponent, itemIndex: number) => {
                 let totalDistanceSwiped = 0;
                 item.speed = this.speed;
                 item.position = this._width * itemIndex;
@@ -113,11 +113,11 @@ export class UICarouselComponent implements OnInit {
 
                 this.subscriptions.add(item.swiper.onSwipeLeft.subscribe((distance: number) => {
                     totalDistanceSwiped += Math.abs(distance);
-                    let shortDistance = distance / Math.pow(totalDistanceSwiped, .4);
+                    const shortDistance = distance / Math.pow(totalDistanceSwiped, .4);
                     if (itemIndex === this.firstItemIndex && this.infinite) {
                         this.rotateRight();
                     }
-                    this.items.forEach((itm, index) => {
+                    this.items.forEach((itm: UICarouselItemComponent) => {
                         if ((itemIndex === this.firstItemIndex || (itemIndex === this.lastItemIndex && distance > 0))
                             && !this.infinite) {
                             itm.currentPosition += shortDistance;
@@ -130,11 +130,11 @@ export class UICarouselComponent implements OnInit {
 
                 this.subscriptions.add(item.swiper.onSwipeRight.subscribe((distance: number) => {
                     totalDistanceSwiped += Math.abs(distance);
-                    let shortDistance = distance / Math.pow(totalDistanceSwiped, .4);
+                    const shortDistance = distance / Math.pow(totalDistanceSwiped, .4);
                     if (itemIndex === this.lastItemIndex && this.infinite) {
                         this.rotateLeft();
                     }
-                    this.items.forEach((itm, index) => {
+                    this.items.forEach((itm: UICarouselItemComponent) => {
                         if ((itemIndex === this.lastItemIndex || (itemIndex === this.firstItemIndex && distance < 0))
                             && !this.infinite) {
                             itm.currentPosition += shortDistance;
@@ -167,7 +167,7 @@ export class UICarouselComponent implements OnInit {
                 }));
             });
         } else {
-            this.items.forEach((item, index) => {
+            this.items.forEach((item: UICarouselItemComponent, index: number) => {
                 item.zIndex = this.items.length - index;
                 item.setzIndex(item.zIndex);
             });
@@ -204,18 +204,17 @@ export class UICarouselComponent implements OnInit {
 
     slideTo(index: number) {
         this.onChange.emit((index + this.items.length) % this.items.length);
-        let steps = this.currentItemIndex - index;
+        const steps = this.currentItemIndex - index;
         if (this.infinite) {
             if (steps > 0) {
                 this.rotateRightTo(this.currentItemIndex);
-            }
-            else if (steps < 0) {
+            } else if (steps < 0) {
                 this.rotateLeftTo(this.currentItemIndex);
             }
         }
         setTimeout(() => {
             this.enableTransition();
-            this.items.forEach((item, i) => {
+            this.items.forEach((item: UICarouselItemComponent) => {
                 item.position += this._width * (steps);
                 item.currentPosition = item.position;
                 item.moveTo(item.position);
@@ -246,27 +245,27 @@ export class UICarouselComponent implements OnInit {
 
     slideToPrevPosition() {
         this.enableTransition();
-        this.items.forEach(item => {
+        this.items.forEach((item: UICarouselItemComponent) => {
             item.currentPosition = item.position;
             item.moveTo(item.position);
         })
     }
 
     disableTransition() {
-        this.items.forEach((item, index) => {
+        this.items.forEach((item: UICarouselItemComponent) => {
             item.disableTransition()
         })
     }
 
     enableTransition() {
-        this.items.forEach((item, index) => {
+        this.items.forEach((item: UICarouselItemComponent) => {
             item.enableTransition()
         });
     }
 
-    getItemByIndex(index: number) {
-        return this.items.find((item, i) => {
-            return i === index;
+    getItemByIndex(targetIndex: number) {
+        return this.items.find((__: UICarouselItemComponent, index: number) => {
+            return index === targetIndex;
         });
     }
 
@@ -287,8 +286,8 @@ export class UICarouselComponent implements OnInit {
     }
 
     rotateRight() {
-        let firstItemRef = this.getItemByIndex(this.firstItemIndex);
-        let lastItemRef = this.getItemByIndex(this.lastItemIndex);
+        const firstItemRef = this.getItemByIndex(this.firstItemIndex);
+        const lastItemRef = this.getItemByIndex(this.lastItemIndex);
 
         if (!this.fade) {
             lastItemRef.position = firstItemRef.position - this._width;
@@ -301,8 +300,8 @@ export class UICarouselComponent implements OnInit {
     }
 
     rotateLeft() {
-        let firstItemRef = this.getItemByIndex(this.firstItemIndex);
-        let lastItemRef = this.getItemByIndex(this.lastItemIndex);
+        const firstItemRef = this.getItemByIndex(this.firstItemIndex);
+        const lastItemRef = this.getItemByIndex(this.lastItemIndex);
         firstItemRef.position = lastItemRef.position + this._width;
         firstItemRef.currentPosition = firstItemRef.position;
         firstItemRef.disableTransition();
@@ -313,9 +312,8 @@ export class UICarouselComponent implements OnInit {
 
     fadeTo(index: number) {
         this.onChange.emit(index);
-        let firstItem = this.getItemByIndex(this.currentItemIndex);
-        let targetItem = this.getItemByIndex(index);
-        let highestZIndex = this.items.length;
+        const firstItem = this.getItemByIndex(this.currentItemIndex);
+        const targetItem = this.getItemByIndex(index);
         targetItem.zIndex = firstItem.zIndex + 1;
         targetItem.setzIndex(targetItem.zIndex);
         targetItem.disableTransition();
@@ -324,13 +322,13 @@ export class UICarouselComponent implements OnInit {
     }
 
     fadeRight() {
-        let newIndex = (this.currentItemIndex + 1) % this.items.length;
+        const newIndex = (this.currentItemIndex + 1) % this.items.length;
         this.fadeTo(newIndex)
         this.currentItemIndex = newIndex;
     }
 
     fadeLeft() {
-        let newIndex = (this.currentItemIndex - 1 + this.items.length) % this.items.length;
+        const newIndex = (this.currentItemIndex - 1 + this.items.length) % this.items.length;
         this.fadeTo(newIndex);
         this.currentItemIndex = newIndex;
     }
@@ -346,7 +344,7 @@ export class UICarouselComponent implements OnInit {
     }
 
     @HostListener('window:resize', ['$event'])
-    onResize(event: any) {
+    onResize(__: any) {
         this.rePosition();
     }
 
@@ -354,20 +352,21 @@ export class UICarouselComponent implements OnInit {
         if (this.items && this.items.length > 0) {
             this._width = this.items.first.el.nativeElement.offsetWidth;
         }
-        let items = this.items.toArray();
-        items.sort((item1, item2) => {
-            if (item1.position > item2.position)
+        const items = this.items.toArray();
+        items.sort((item1: UICarouselItemComponent, item2: UICarouselItemComponent) => {
+            if (item1.position > item2.position) {
                 return 1;
-            else if (item1.position < item2.position)
+            } else if (item1.position < item2.position) {
                 return -1;
-            else
+            } else {
                 return 0;
+            }
         })
 
-        let currentItem = this.getItemByIndex(this.currentItemIndex);
-        let currentItemIndex = items.indexOf(currentItem);
+        const currentItem = this.getItemByIndex(this.currentItemIndex);
+        const currentItemIndex = items.indexOf(currentItem);
         for (let i = currentItemIndex; i < items.length + currentItemIndex; i++) {
-            let item = items[(i + items.length) % items.length];
+            const item = items[(i + items.length) % items.length];
             item.position = ((i + items.length) % items.length - currentItemIndex) * this._width;
             item.disableTransition();
             item.moveTo(item.position);
@@ -376,11 +375,12 @@ export class UICarouselComponent implements OnInit {
 
     ngOnDestroy() {
         this.subscriptions.unsubscribe();
+        clearInterval(this.interval);
     }
 
-    autoPlayFunction(boolean) {
+    autoPlayFunction(enable: boolean) {
         if (this.autoPlay) {
-            if (boolean) {
+            if (enable) {
                 this.interval = setInterval(() => {
                     this.next();
                 }, this.autoPlaySpeed);

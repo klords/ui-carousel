@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
     selector: 'arrow',
@@ -22,7 +22,6 @@ import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@an
         .arrow.right{
             right: 5px;
             top: 50%;
-         
             transform: scaleX(-1) translateY(-50%);
             -moz-transform: scaleX(-1) translateY(-50%);
             -o-transform: scaleX(-1) translateY(-50%);
@@ -31,7 +30,6 @@ import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@an
             filter: FlipH;
             -ms-filter: "FlipH";
         }
-        
         .arrow.left{
             left: 5px;
             top: 50%;
@@ -45,7 +43,6 @@ import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@an
             opacity: .8;
             cursor: pointer;
         }
-        
         .arrow:before{
             content: "";
             height: 3px;
@@ -81,22 +78,20 @@ import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from '@an
             opacity: .4;
             cursor: pointer;
         }
-    `]
+    `],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ArrowComponent {
     @Input() dir: string;
-
-    @Input("disabled")
-    disabled: boolean = true;
-
+    @Input('disabled') disabled = true;
     @Output('on-click') click: EventEmitter<any> = new EventEmitter<any>();
-
 
     constructor() { }
 
     onClick() {
-        if (!this.disabled)
+        if (!this.disabled) {
             this.click.emit();
+        }
     }
 }
