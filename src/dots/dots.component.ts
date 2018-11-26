@@ -58,8 +58,7 @@ import {
         .dot.active{
             opacity: .8;
         }
-    `],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    `]
 })
 
 export class DotsComponent implements OnInit {
